@@ -133,6 +133,7 @@ bo_create(int fd, unsigned int format,
 	void *planes[3] = { 0, };
 	void *virtual;
 	int ret;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	switch (format) {
 	case DRM_FORMAT_C8:

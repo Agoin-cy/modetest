@@ -2721,6 +2721,8 @@ drm_public int drmSetMaster(int fd)
 
 drm_public int drmDropMaster(int fd)
 {
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+
         return drmIoctl(fd, DRM_IOCTL_DROP_MASTER, NULL);
 }
 

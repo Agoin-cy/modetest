@@ -303,6 +303,7 @@ drm_public int drmModeAddFB2(int fd, uint32_t width, uint32_t height,
 					  pixel_format, bo_handles,
 					  pitches, offsets, NULL,
 					  buf_id, flags);
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 }
 
 drm_public int drmModeRmFB(int fd, uint32_t bufferId)

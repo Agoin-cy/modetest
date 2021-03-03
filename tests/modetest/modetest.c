@@ -370,16 +370,14 @@ static void dump_prop(struct device *dev, drmModePropertyPtr prop,
 	printf("\n");
 
 	if (drm_property_type_is(prop, DRM_MODE_PROP_SIGNED_RANGE)) {
-		printf("\t\t1values:");
-		printf("\t1values:%d",prop->count_values);
+		printf("\t\tvalues:");
 		for (i = 0; i < prop->count_values; i++)
 			printf(" %"PRId64, U642I64(prop->values[i]));
 		printf("\n");
 	}
 
 	if (drm_property_type_is(prop, DRM_MODE_PROP_RANGE)) {
-		printf("\t\t2values:");
-		printf("\t\t2values:%d",prop->count_values);
+		printf("\t\tvalues:");
 		for (i = 0; i < prop->count_values; i++)
 			printf(" %"PRIu64, prop->values[i]);
 		printf("\n");
@@ -392,8 +390,7 @@ static void dump_prop(struct device *dev, drmModePropertyPtr prop,
 			       prop->enums[i].value);
 		printf("\n");
 	} else if (drm_property_type_is(prop, DRM_MODE_PROP_BITMASK)) {
-		printf("\t\t3values:");
-		printf("\t3values:%d",prop->count_values);
+		printf("\t\tvalues:");
 		for (i = 0; i < prop->count_enums; i++)
 			printf(" %s=0x%llx", prop->enums[i].name,
 			       (1LL << prop->enums[i].value));
@@ -411,7 +408,7 @@ static void dump_prop(struct device *dev, drmModePropertyPtr prop,
 		assert(prop->count_blobs == 0);
 	}
 
-	printf("\t\t4value:");
+	printf("\t\tvalue:");
 	if (drm_property_type_is(prop, DRM_MODE_PROP_BLOB))
 		dump_blob(dev, value);
 	else if (drm_property_type_is(prop, DRM_MODE_PROP_SIGNED_RANGE))
@@ -905,6 +902,7 @@ static int pipe_find_crtc_and_mode(struct device *dev, struct pipe_arg *pipe)
 	int i;
 
 	pipe->mode = NULL;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	for (i = 0; i < (int)pipe->num_cons; i++) {
 		mode = connector_find_mode(dev, pipe->con_ids[i],
@@ -1066,6 +1064,7 @@ static bool format_support(const drmModePlanePtr ovr, uint32_t fmt)
 		if (ovr->formats[i] == fmt)
 			return true;
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	return false;
 }
@@ -1229,6 +1228,7 @@ static int set_plane(struct device *dev, struct plane_arg *p)
 			break;
 		}
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	if (!crtc) {
 		fprintf(stderr, "CRTC %u not found\n", p->crtc_id);
@@ -1254,12 +1254,14 @@ static int set_plane(struct device *dev, struct plane_arg *p)
 			break;
 		}
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	if (i == dev->resources->plane_res->count_planes) {
 		fprintf(stderr, "no unused plane available for CRTC %u\n",
 			crtc->crtc->crtc_id);
 		return -1;
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	fprintf(stderr, "testing %dx%d@%s overlay plane %u\n",
 		p->w, p->h, p->format_str, plane_id);
@@ -1270,6 +1272,7 @@ static int set_plane(struct device *dev, struct plane_arg *p)
 		return -1;
 
 	p->bo = plane_bo;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	/* just use single plane format for now.. */
 	if (drmModeAddFB2(dev->fd, p->w, p->h, p->fourcc,
@@ -1288,6 +1291,7 @@ static int set_plane(struct device *dev, struct plane_arg *p)
 		crtc_x = p->x;
 		crtc_y = p->y;
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	/* note src coords (last 4 args) are in Q16 format */
 	if (drmModeSetPlane(dev->fd, plane_id, crtc->crtc->crtc_id, p->fb_id,
@@ -1299,6 +1303,7 @@ static int set_plane(struct device *dev, struct plane_arg *p)
 	}
 
 	ovr->crtc_id = crtc->crtc->crtc_id;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	return 0;
 }
@@ -1441,7 +1446,7 @@ static void set_mode(struct device *dev, struct pipe_arg *pipes, unsigned int co
 	dev->mode.width = 0;
 	dev->mode.height = 0;
 	dev->mode.fb_id = 0;
-
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 	for (i = 0; i < count; i++) {
 		struct pipe_arg *pipe = &pipes[i];
 
@@ -1453,6 +1458,7 @@ static void set_mode(struct device *dev, struct pipe_arg *pipes, unsigned int co
 		if (dev->mode.height < pipe->mode->vdisplay)
 			dev->mode.height = pipe->mode->vdisplay;
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	bo = bo_create(dev->fd, pipes[0].fourcc, dev->mode.width,
 		       dev->mode.height, handles, pitches, offsets,
@@ -1478,6 +1484,8 @@ static void set_mode(struct device *dev, struct pipe_arg *pipes, unsigned int co
 
 		if (pipe->mode == NULL)
 			continue;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+
 
 		printf("setting mode %s-%dHz@%s on connectors ",
 		       pipe->mode_str, pipe->mode->vrefresh, pipe->format_str);
@@ -1488,6 +1496,8 @@ static void set_mode(struct device *dev, struct pipe_arg *pipes, unsigned int co
 		ret = drmModeSetCrtc(dev->fd, pipe->crtc->crtc->crtc_id, fb_id,
 				     x, 0, pipe->con_ids, pipe->num_cons,
 				     pipe->mode);
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+
 
 		/* XXX: Actually check if this is needed */
 		drmModeDirtyFB(dev->fd, fb_id, NULL, 0);
@@ -1539,6 +1549,7 @@ static void set_cursors(struct device *dev, struct pipe_arg *pipes, unsigned int
 		       offsets, UTIL_PATTERN_PLAIN);
 	if (bo == NULL)
 		return;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	dev->mode.cursor_bo = bo;
 
@@ -1554,6 +1565,7 @@ static void set_cursors(struct device *dev, struct pipe_arg *pipes, unsigned int
 			return;
 		}
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	cursor_start();
 }
@@ -1574,12 +1586,14 @@ static void test_page_flip(struct device *dev, struct pipe_arg *pipes, unsigned 
 	drmEventContext evctx;
 	unsigned int i;
 	int ret;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	other_bo = bo_create(dev->fd, pipes[0].fourcc, dev->mode.width,
 			     dev->mode.height, handles, pitches, offsets,
 			     UTIL_PATTERN_PLAIN);
 	if (other_bo == NULL)
 		return;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	ret = drmModeAddFB2(dev->fd, dev->mode.width, dev->mode.height,
 			    pipes[0].fourcc, handles, pitches, offsets,
@@ -1588,6 +1602,7 @@ static void test_page_flip(struct device *dev, struct pipe_arg *pipes, unsigned 
 		fprintf(stderr, "failed to add fb: %s\n", strerror(errno));
 		goto err;
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	for (i = 0; i < count; i++) {
 		struct pipe_arg *pipe = &pipes[i];
@@ -1608,6 +1623,7 @@ static void test_page_flip(struct device *dev, struct pipe_arg *pipes, unsigned 
 		pipe->fb_id[1] = other_fb_id;
 		pipe->current_fb_id = other_fb_id;
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	memset(&evctx, 0, sizeof evctx);
 	evctx.version = DRM_EVENT_CONTEXT_VERSION;
@@ -1633,6 +1649,7 @@ static void test_page_flip(struct device *dev, struct pipe_arg *pipes, unsigned 
 #else
 		struct timeval timeout = { .tv_sec = 3, .tv_usec = 0 };
 		fd_set fds;
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 		FD_ZERO(&fds);
 		FD_SET(0, &fds);
@@ -1647,6 +1664,7 @@ static void test_page_flip(struct device *dev, struct pipe_arg *pipes, unsigned 
 			break;
 		}
 #endif
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 		drmHandleEvent(dev->fd, &evctx);
 	}
@@ -2142,21 +2160,27 @@ int main(int argc, char **argv)
 				fprintf(stderr, "driver doesn't support the dumb buffer API\n");
 				return 1;
 			}
+   printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 			if (count)
 				set_mode(&dev, pipe_args, count);
+   printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 			if (plane_count)
 				set_planes(&dev, plane_args, plane_count);
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 			if (test_cursor)
 				set_cursors(&dev, pipe_args, count);
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 			if (test_vsync)
 				test_page_flip(&dev, pipe_args, count);
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 			if (drop_master)
 				drmDropMaster(dev.fd);
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 			getchar();
 
