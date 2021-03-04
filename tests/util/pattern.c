@@ -194,7 +194,24 @@ static void fill_smpte_yuv_planar(const struct util_yuv_info *yuv,
 	unsigned int ysub = yuv->ysub;
 	unsigned int x;
 	unsigned int y;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
+
+	for (y = 0; y < height; ++y) {
+		for (x = 0; x < width; ++x)
+			y_mem[x] = colors_top[2].y;
+		y_mem += stride;
+	}
+
+	for (y = 0; y < height / ysub; ++y) {
+		for (x = 0; x < width; x += xsub) {
+			u_mem[x*cs/xsub] = colors_top[2].u;
+			v_mem[x*cs/xsub] = colors_top[2].v;
+		}
+		u_mem += stride * cs / xsub;
+		v_mem += stride * cs / xsub;
+	}
+#if 0
 	/* Luma */
 	for (y = 0; y < height * 6 / 9; ++y) {
 		for (x = 0; x < width; ++x)
@@ -258,6 +275,8 @@ static void fill_smpte_yuv_planar(const struct util_yuv_info *yuv,
 		u_mem += stride * cs / xsub;
 		v_mem += stride * cs / xsub;
 	}
+#endif
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 }
 
 static void fill_smpte_yuv_packed(const struct util_yuv_info *yuv, void *mem,
@@ -298,6 +317,7 @@ static void fill_smpte_yuv_packed(const struct util_yuv_info *yuv, void *mem,
 	unsigned int v = (yuv->order & YUV_YCbCr) ? 2 : 0;
 	unsigned int x;
 	unsigned int y;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	/* Luma */
 	for (y = 0; y < height * 6 / 9; ++y) {
@@ -357,6 +377,7 @@ static void fill_smpte_yuv_packed(const struct util_yuv_info *yuv, void *mem,
 		}
 		c_mem += stride;
 	}
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 }
 
 static void fill_smpte_rgb16(const struct util_rgb_info *rgb, void *mem,
@@ -686,28 +707,34 @@ static void fill_smpte(const struct util_format_info *info, void *planes[3],
 
 	switch (info->format) {
 	case DRM_FORMAT_C8:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_smpte_c8(planes[0], width, height, stride);
 	case DRM_FORMAT_UYVY:
 	case DRM_FORMAT_VYUY:
 	case DRM_FORMAT_YUYV:
 	case DRM_FORMAT_YVYU:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_smpte_yuv_packed(&info->yuv, planes[0], width,
 					     height, stride);
+
 
 	case DRM_FORMAT_NV12:
 	case DRM_FORMAT_NV21:
 	case DRM_FORMAT_NV16:
 	case DRM_FORMAT_NV61:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		u = info->yuv.order & YUV_YCbCr ? planes[1] : planes[1] + 1;
 		v = info->yuv.order & YUV_YCrCb ? planes[1] : planes[1] + 1;
 		return fill_smpte_yuv_planar(&info->yuv, planes[0], u, v,
 					     width, height, stride);
-
+		
 	case DRM_FORMAT_YUV420:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_smpte_yuv_planar(&info->yuv, planes[0], planes[1],
 					     planes[2], width, height, stride);
 
 	case DRM_FORMAT_YVU420:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_smpte_yuv_planar(&info->yuv, planes[0], planes[2],
 					     planes[1], width, height, stride);
 
@@ -729,11 +756,13 @@ static void fill_smpte(const struct util_format_info *info, void *planes[3],
 	case DRM_FORMAT_RGBX5551:
 	case DRM_FORMAT_BGRA5551:
 	case DRM_FORMAT_BGRX5551:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_smpte_rgb16(&info->rgb, planes[0],
 					width, height, stride);
 
 	case DRM_FORMAT_BGR888:
 	case DRM_FORMAT_RGB888:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_smpte_rgb24(&info->rgb, planes[0],
 					width, height, stride);
 	case DRM_FORMAT_ARGB8888:
@@ -752,6 +781,7 @@ static void fill_smpte(const struct util_format_info *info, void *planes[3],
 	case DRM_FORMAT_RGBX1010102:
 	case DRM_FORMAT_BGRA1010102:
 	case DRM_FORMAT_BGRX1010102:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_smpte_rgb32(&info->rgb, planes[0],
 					width, height, stride);
 
@@ -759,6 +789,7 @@ static void fill_smpte(const struct util_format_info *info, void *planes[3],
 	case DRM_FORMAT_XBGR16161616F:
 	case DRM_FORMAT_ARGB16161616F:
 	case DRM_FORMAT_ABGR16161616F:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_smpte_rgb16fp(&info->rgb, planes[0],
 					  width, height, stride);
 	}
@@ -844,13 +875,131 @@ static void fill_tiles_yuv_planar(const struct util_format_info *info,
 				  unsigned char *v_mem, unsigned int width,
 				  unsigned int height, unsigned int stride)
 {
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 	const struct util_yuv_info *yuv = &info->yuv;
 	unsigned int cs = yuv->chroma_stride;
 	unsigned int xsub = yuv->xsub;
 	unsigned int ysub = yuv->ysub;
 	unsigned int x;
 	unsigned int y;
+	unsigned int x_width = 512;
+	unsigned int x_hight = 512;
+#if 1
+	FILE *fp_yuv = fopen("2333.yuv", "rb+");
+	if(fp_yuv == NULL)
+	{
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+	return;
+	}
 
+	unsigned char *desk_y = NULL;
+	unsigned char *desk_u = NULL;
+	unsigned char *desk_v = NULL;
+	unsigned char *data = (unsigned char *) malloc(x_width * x_hight * 3 / 2);
+	unsigned char *y_data = (unsigned char *) malloc(x_width * x_hight);
+	unsigned char *u_data = (unsigned char *) malloc(x_width * x_hight / 4);
+	unsigned char *v_data = (unsigned char *) malloc(x_width * x_hight / 4);
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);	
+
+	fread(data, 1, x_width * x_hight  * 3 / 2, fp_yuv);
+
+	memcpy(y_data,data,x_hight * x_width);
+	memcpy(u_data,data + (x_hight * x_width),x_hight * x_width / 4);
+	memcpy(v_data,data + (x_hight * x_width * 5 / 4),x_hight * x_width / 4);
+
+
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);	
+
+	desk_y = y_data;
+	for (y = 0; y < height; ++y) {
+		for (x = 0; x < width; ++x)
+			y_mem[x] = *(y_data + x + y * width);
+		y_mem += stride;
+//		desk_y = y_data + (y + 1) * width;
+	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+
+	desk_u = u_data;
+	desk_v = v_data;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+	printf("[%s %s] %s: %s: %d cs=%d xsub=%d ysub=%d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__,cs,xsub,ysub);
+	for (y = 0; y < height / ysub; ++y) {
+		for (x = 0; x < width; x += xsub) {
+			u_mem[x] = *(u_data + x + y * width);
+			v_mem[x] = *(v_data + x + y * width);
+		}
+		u_mem += stride;
+		v_mem += stride;
+//		desk_u = u_data + (y + 1) * width;
+//		desk_v = v_data + (y + 1) * width;		
+	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+
+#endif
+
+#if 0
+	for (y = 0; y < height; ++y) {
+		for (x = 0; x < width; ++x)
+			y_mem[x] = *(y_data++);
+//			y_data += 1; 
+		y_mem += stride;
+	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+	for (y = height; y < height *3/2; ++y) {
+		for (x = width; x < width *3/2; ++x) {
+			u_mem[x] = *(u_data++);
+//			u_data = u_data + 1;
+			v_mem[x] = *(v_data++);
+//			v_data = v_data + 1;
+		}
+		u_mem += stride;
+		v_mem += stride;
+	}
+#endif
+
+	
+		//释放资源
+		free(data);		
+		free(y_data);
+		free(u_data);
+		free(v_data);
+		fclose(fp_yuv);
+printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+
+
+
+#if 0
+
+	const struct color_yuv colors_top[] = {
+			MAKE_YUV_601(191, 192, 192),	/* grey */
+			MAKE_YUV_601(192, 192, 0),	/* yellow */
+			MAKE_YUV_601(0, 192, 192),	/* cyan */
+			MAKE_YUV_601(0, 192, 0),	/* green */
+			MAKE_YUV_601(192, 0, 192),	/* magenta */
+			MAKE_YUV_601(192, 0, 0),	/* red */
+			MAKE_YUV_601(0, 0, 192),	/* blue */
+		};
+
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+
+	
+		for (y = 0; y < height; ++y) {
+			for (x = 0; x < width; ++x)
+				y_mem[x] = colors_top[2].y;
+			y_mem += stride;
+		}
+	
+		for (y = 0; y < height / ysub; ++y) {
+			for (x = 0; x < width; x += xsub) {
+				u_mem[x*cs/xsub] = colors_top[2].u;
+				v_mem[x*cs/xsub] = colors_top[2].v;
+			}
+			u_mem += stride * cs / xsub;
+			v_mem += stride * cs / xsub;
+		}
+#endif
+	
+#if 0
 	for (y = 0; y < height; ++y) {
 		for (x = 0; x < width; ++x) {
 			div_t d = div(x+y, width);
@@ -871,6 +1020,8 @@ static void fill_tiles_yuv_planar(const struct util_format_info *info,
 			v_mem += stride * cs / xsub;
 		}
 	}
+#endif
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 }
 
 static void fill_tiles_yuv_packed(const struct util_format_info *info,
@@ -884,6 +1035,7 @@ static void fill_tiles_yuv_packed(const struct util_format_info *info,
 	unsigned int v = (yuv->order & YUV_YCbCr) ? 2 : 0;
 	unsigned int x;
 	unsigned int y;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	for (y = 0; y < height; ++y) {
 		for (x = 0; x < width; x += 2) {
@@ -903,6 +1055,7 @@ static void fill_tiles_yuv_packed(const struct util_format_info *info,
 		y_mem += stride;
 		c_mem += stride;
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 }
 
 static void fill_tiles_rgb16(const struct util_format_info *info, void *mem,
@@ -1011,31 +1164,40 @@ static void fill_tiles(const struct util_format_info *info, void *planes[3],
 		       unsigned int stride)
 {
 	unsigned char *u, *v;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	switch (info->format) {
 	case DRM_FORMAT_UYVY:
 	case DRM_FORMAT_VYUY:
 	case DRM_FORMAT_YUYV:
 	case DRM_FORMAT_YVYU:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_tiles_yuv_packed(info, planes[0],
 					     width, height, stride);
+	
 
 	case DRM_FORMAT_NV12:
 	case DRM_FORMAT_NV21:
 	case DRM_FORMAT_NV16:
 	case DRM_FORMAT_NV61:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		u = info->yuv.order & YUV_YCbCr ? planes[1] : planes[1] + 1;
 		v = info->yuv.order & YUV_YCrCb ? planes[1] : planes[1] + 1;
 		return fill_tiles_yuv_planar(info, planes[0], u, v,
 					     width, height, stride);
+	
 
 	case DRM_FORMAT_YUV420:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_tiles_yuv_planar(info, planes[0], planes[1],
 					     planes[2], width, height, stride);
 
+
 	case DRM_FORMAT_YVU420:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_tiles_yuv_planar(info, planes[0], planes[2],
 					     planes[1], width, height, stride);
+
 
 	case DRM_FORMAT_ARGB4444:
 	case DRM_FORMAT_XRGB4444:
@@ -1078,6 +1240,7 @@ static void fill_tiles(const struct util_format_info *info, void *planes[3],
 	case DRM_FORMAT_RGBX1010102:
 	case DRM_FORMAT_BGRA1010102:
 	case DRM_FORMAT_BGRX1010102:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_tiles_rgb32(info, planes[0],
 					width, height, stride);
 
@@ -1085,15 +1248,19 @@ static void fill_tiles(const struct util_format_info *info, void *planes[3],
 	case DRM_FORMAT_XBGR16161616F:
 	case DRM_FORMAT_ARGB16161616F:
 	case DRM_FORMAT_ABGR16161616F:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_tiles_rgb16fp(info, planes[0],
 					  width, height, stride);
 	}
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 }
 
 static void fill_plain(const struct util_format_info *info, void *planes[3],
 		       unsigned int height,
 		       unsigned int stride)
 {
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+
 	switch (info->format) {
 	case DRM_FORMAT_XRGB16161616F:
 	case DRM_FORMAT_XBGR16161616F:
@@ -1106,6 +1273,7 @@ static void fill_plain(const struct util_format_info *info, void *planes[3],
 		memset(planes[0], 0x77, stride * height);
 		break;
 	}
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 }
 
 static void fill_gradient_rgb32(const struct util_rgb_info *rgb,
@@ -1193,6 +1361,8 @@ static void fill_gradient(const struct util_format_info *info, void *planes[3],
 			  unsigned int width, unsigned int height,
 			  unsigned int stride)
 {
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+
 	switch (info->format) {
 	case DRM_FORMAT_ARGB8888:
 	case DRM_FORMAT_XRGB8888:
@@ -1212,6 +1382,7 @@ static void fill_gradient(const struct util_format_info *info, void *planes[3],
 	case DRM_FORMAT_BGRX1010102:
 		return fill_gradient_rgb32(&info->rgb, planes[0],
 					   width, height, stride);
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	case DRM_FORMAT_XRGB16161616F:
 	case DRM_FORMAT_XBGR16161616F:
@@ -1220,6 +1391,7 @@ static void fill_gradient(const struct util_format_info *info, void *planes[3],
 		return fill_gradient_rgb16fp(&info->rgb, planes[0],
 					     width, height, stride);
 	}
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 }
 
 /*
@@ -1239,28 +1411,36 @@ void util_fill_pattern(uint32_t format, enum util_fill_pattern pattern,
 		       unsigned int height, unsigned int stride)
 {
 	const struct util_format_info *info;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	info = util_format_info_find(format);
 	if (info == NULL)
 		return;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	switch (pattern) {
 	case UTIL_PATTERN_TILES:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_tiles(info, planes, width, height, stride);
 
+
 	case UTIL_PATTERN_SMPTE:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_smpte(info, planes, width, height, stride);
 
 	case UTIL_PATTERN_PLAIN:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_plain(info, planes, height, stride);
 
 	case UTIL_PATTERN_GRADIENT:
+		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 		return fill_gradient(info, planes, width, height, stride);
-
+	
 	default:
 		printf("Error: unsupported test pattern %u.\n", pattern);
 		break;
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 }
 
 static const char *pattern_names[] = {

@@ -60,12 +60,14 @@ bo_create_dumb(int fd, unsigned int width, unsigned int height, unsigned int bpp
 	struct drm_mode_create_dumb arg;
 	struct bo *bo;
 	int ret;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	bo = calloc(1, sizeof(*bo));
 	if (bo == NULL) {
 		fprintf(stderr, "failed to allocate buffer object\n");
 		return NULL;
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	memset(&arg, 0, sizeof(arg));
 	arg.bpp = bpp;
@@ -79,6 +81,7 @@ bo_create_dumb(int fd, unsigned int width, unsigned int height, unsigned int bpp
 		free(bo);
 		return NULL;
 	}
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	bo->fd = fd;
 	bo->handle = arg.handle;
@@ -93,6 +96,7 @@ static int bo_map(struct bo *bo, void **out)
 	struct drm_mode_map_dumb arg;
 	void *map;
 	int ret;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	memset(&arg, 0, sizeof(arg));
 	arg.handle = bo->handle;
@@ -105,6 +109,7 @@ static int bo_map(struct bo *bo, void **out)
 		       bo->fd, arg.offset);
 	if (map == MAP_FAILED)
 		return -EINVAL;
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 
 	bo->ptr = map;
 	*out = map;

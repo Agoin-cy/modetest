@@ -299,11 +299,12 @@ drm_public int drmModeAddFB2(int fd, uint32_t width, uint32_t height,
 		const uint32_t pitches[4], const uint32_t offsets[4],
 		uint32_t *buf_id, uint32_t flags)
 {
+	printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
+
 	return drmModeAddFB2WithModifiers(fd, width, height,
 					  pixel_format, bo_handles,
 					  pitches, offsets, NULL,
 					  buf_id, flags);
-		printf("[%s %s] %s: %s: %d\n", __DATE__, __TIME__, __FILE__, __func__, __LINE__);
 }
 
 drm_public int drmModeRmFB(int fd, uint32_t bufferId)
